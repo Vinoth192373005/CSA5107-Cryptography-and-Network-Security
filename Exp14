@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+int main() {
+    char plain[] = "send more money";
+    char target[] = "cash not needed";
+    int key[] = {9, 0, 1, 7, 23, 15, 21, 14, 11, 11, 2, 8, 9};
+    int key2[13], i, j = 0;
+    char cipher[100], recovered[100];
+
+    strcpy(cipher, plain);
+
+    for (i = 0; cipher[i]; i++) {
+        if (isalpha((unsigned char)cipher[i])) {
+            char base = islower((unsigned char)cipher[i]) ? 'a' : 'A';
+            cipher[i] = (cipher[i] - base + key[j++]) % 26 + base;
+        }
+    }
+
+    printf("Ciphertext: %s\n", cipher);
+
+    j = 0;
+    for (i = 0; cipher[i]; i++) {
+        if (isalpha((unsigned char)cipher[i])) {
+            int c = tolower((unsigned char)cipher[i]) - 'a';
+            int p = tolower((unsigned char)target[i]) - 'a';
+            key2[j++] = (c - p + 26) % 26;
+        }
+    }
+
+    printf("Key for target plaintext: ");
+    for (i = 0; i < 13; i++)
+        printf("%d ", key2[i]);
+
+    strcpy(recovered, cipher);
+    j = 0;
+
+    for (i = 0; recovered[i]; i++) {
+        if (isalpha((unsigned char)recovered[i])) {
+            char base = islower((unsigned char)recovered[i]) ? 'a' : 'A';
+            recovered[i] =
+                (recovered[i] - base - key2[j++] + 26) % 26 + base;
+        }
+    }
+
+    printf("\nDecrypted text: %s\n", recovered);
+
+    return 0;
+}
