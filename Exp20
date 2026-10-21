@@ -1,0 +1,38 @@
+
+#include <stdio.h>
+#include <stdint.h>
+
+int main() {
+    uint8_t P1 = 0x3A, P2 = 0x5C;
+    uint8_t K = 0xA5, IV = 0x12;
+    uint8_t C1, C2, R1, R2;
+    uint8_t E1, E2;
+
+    /* ECB mode */
+    C1 = P1 ^ K;
+    C2 = P2 ^ K;
+
+    E1 = C1 ^ 0x01;  /* Introduce a bit error */
+
+    R1 = E1 ^ K;
+    R2 = C2 ^ K;
+
+    printf("ECB mode:\n");
+    printf("P1 = %02X, Recovered P1 = %02X\n", P1, R1);
+    printf("P2 = %02X, Recovered P2 = %02X\n", P2, R2);
+
+    /* CBC mode */
+    C1 = (P1 ^ IV) ^ K;
+    C2 = (P2 ^ C1) ^ K;
+
+    E1 = C1 ^ 0x01;  /* Corrupt transmitted C1 */
+
+    R1 = (E1 ^ K) ^ IV;
+    R2 = (C2 ^ K) ^ E1;
+
+    printf("\nCBC mode:\n");
+    printf("P1 = %02X, Recovered P1 = %02X\n", P1, R1);
+    printf("P2 = %02X, Recovered P2 = %02X\n", P2, R2);
+
+    return 0;
+}
