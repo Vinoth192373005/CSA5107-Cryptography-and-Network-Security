@@ -1,0 +1,38 @@
+
+#include <stdio.h>
+#include <stdint.h>
+
+int shifts[16] = {
+    1, 1, 2, 2, 2, 2, 2, 2,
+    1, 2, 2, 2, 2, 2, 2, 1
+};
+
+int main() {
+    uint64_t key;
+    uint64_t subkeys[16];
+    uint32_t C, D;
+    int i, shift;
+
+    printf("Enter 64-bit key in hexadecimal: ");
+    scanf("%llx", (unsigned long long *)&key);
+
+    C = (uint32_t)((key >> 28) & 0x0FFFFFFF);
+    D = (uint32_t)(key & 0x0FFFFFFF);
+
+    for (i = 0; i < 16; i++) {
+        shift = shifts[i];
+
+        C = ((C << shift) | (C >> (28 - shift))) & 0x0FFFFFFF;
+        D = ((D << shift) | (D >> (28 - shift))) & 0x0FFFFFFF;
+
+        subkeys[i] = ((uint64_t)C << 28) | D;
+    }
+
+    printf("\nRound keys for decryption (reverse order):\n");
+
+    for (i = 15; i >= 0; i--)
+        printf("K%d = %014llX\n", i + 1,
+               (unsigned long long)subkeys[i]);
+
+    return 0;
+}
