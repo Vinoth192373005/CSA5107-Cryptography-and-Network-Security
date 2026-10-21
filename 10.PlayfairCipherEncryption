@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+char m[5][5] = {
+    {'M','F','H','I','K'},
+    {'U','N','O','P','Q'},
+    {'Z','V','W','X','Y'},
+    {'E','L','A','R','G'},
+    {'D','S','T','B','C'}
+};
+
+void pos(char ch, int *r, int *c) {
+    if (ch == 'J') ch = 'I';
+
+    for (int i = 0; i < 5; i++)
+        for (int j = 0; j < 5; j++)
+            if (m[i][j] == ch) {
+                *r = i;
+                *c = j;
+                return;
+            }
+}
+
+void encrypt(char *s) {
+    for (int i = 0; s[i] && s[i + 1]; i += 2) {
+        int r1, c1, r2, c2;
+        pos(s[i], &r1, &c1);
+        pos(s[i + 1], &r2, &c2);
+
+        if (r1 == r2) {
+            s[i] = m[r1][(c1 + 1) % 5];
+            s[i + 1] = m[r2][(c2 + 1) % 5];
+        } else if (c1 == c2) {
+            s[i] = m[(r1 + 1) % 5][c1];
+            s[i + 1] = m[(r2 + 1) % 5][c2];
+        } else {
+            s[i] = m[r1][c2];
+            s[i + 1] = m[r2][c1];
+        }
+    }
+}
+
+int main() {
+    char input[] = "Must see you over Cadogan West. Coming at once.";
+    char text[200];
+    int k = 0;
+
+    for (int i = 0; input[i]; i++)
+        if (isalpha((unsigned char)input[i])) {
+            char ch = toupper((unsigned char)input[i]);
+            text[k++] = (ch == 'J') ? 'I' : ch;
+        }
+
+    text[k] = '\0';
+
+    char prepared[200];
+    int j = 0;
+
+    for (int i = 0; i < k; i++) {
+        prepared[j++] = text[i];
+
+        if (i + 1 < k && text[i] == text[i + 1])
+            prepared[j++] = 'X';
+    }
+
+    if (j % 2 != 0)
+        prepared[j++] = 'X';
+
+    prepared[j] = '\0';
+
+    encrypt(prepared);
+
+    printf("Ciphertext: %s\n", prepared);
+
+    return 0;
+}
