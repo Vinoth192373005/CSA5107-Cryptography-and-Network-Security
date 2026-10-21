@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+int modInverse(int a) {
+    for (int i = 1; i < 26; i++) {
+        if ((a * i) % 26 == 1)
+            return i;
+    }
+    return -1;
+}
+
+int main() {
+    char cipher[1000];
+    int a, b, inverse;
+
+    printf("Enter ciphertext: ");
+    fgets(cipher, sizeof(cipher), stdin);
+
+    a = 21;
+    b = 15;
+    inverse = modInverse(a);
+
+    for (int i = 0; cipher[i] != '\0'; i++) {
+        if (isalpha(cipher[i])) {
+            char base = islower(cipher[i]) ? 'a' : 'A';
+            int c = toupper(cipher[i]) - 'A';
+            int p = (inverse * (c - b + 26) % 26 + 26) % 26;
+            cipher[i] = p + base;
+        }
+    }
+
+    printf("Decrypted plaintext: %s", cipher);
+
+    return 0;
+}
