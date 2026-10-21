@@ -1,0 +1,68 @@
+
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 1000
+
+int main() {
+    char cipher[MAX], plain[MAX];
+    char english[] = "ETAOINSHRDLCUMWFGYPBVKJXQZ";
+    int count[26] = {0}, order[26], i, j, top;
+    char temp;
+    int k;
+
+    printf("Enter ciphertext: ");
+    fgets(cipher, MAX, stdin);
+    cipher[strcspn(cipher, "\n")] = '\0';
+
+    printf("Enter number of candidates (1-10): ");
+    scanf("%d", &top);
+
+    if (top < 1 || top > 10) {
+        printf("Invalid number.\n");
+        return 1;
+    }
+
+    for (i = 0; i < 26; i++)
+        order[i] = i;
+
+    for (i = 0; cipher[i]; i++)
+        if (isalpha((unsigned char)cipher[i]))
+            count[toupper((unsigned char)cipher[i]) - 'A']++;
+
+    for (i = 0; i < 25; i++)
+        for (j = i + 1; j < 26; j++)
+            if (count[order[j]] > count[order[i]]) {
+                k = order[i];
+                order[i] = order[j];
+                order[j] = k;
+            }
+
+    printf("\nPossible plaintexts:\n");
+
+    for (k = 0; k < top; k++) {
+        int shift = k;
+        char map[26];
+
+        for (i = 0; i < 26; i++)
+            map[order[i]] = english[(i + shift) % 26];
+
+        for (i = 0; cipher[i]; i++) {
+            if (isalpha((unsigned char)cipher[i])) {
+                char base = islower((unsigned char)cipher[i]) ? 'a' : 'A';
+                plain[i] = map[toupper((unsigned char)cipher[i]) - 'A'];
+
+                if (base == 'a')
+                    plain[i] = tolower((unsigned char)plain[i]);
+            } else {
+                plain[i] = cipher[i];
+            }
+        }
+
+        plain[i] = '\0';
+        printf("%d. %s\n", k + 1, plain);
+    }
+
+    return 0;
+}
