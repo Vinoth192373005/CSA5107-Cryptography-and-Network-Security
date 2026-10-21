@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int K[2][2] = {{9, 4}, {5, 7}};
+int I[2][2] = {{5, 12}, {15, 25}};
+
+void hill(char *text, int key[2][2]) {
+    for (int i = 0; text[i] && text[i + 1]; i += 2) {
+        int a = text[i] - 'A';
+        int b = text[i + 1] - 'A';
+
+        text[i]     = ((key[0][0] * a + key[0][1] * b) % 26) + 'A';
+        text[i + 1] = ((key[1][0] * a + key[1][1] * b) % 26) + 'A';
+    }
+}
+
+int main() {
+    char text[] = "meet me at the usual place at ten rather than eight oclock";
+    char plain[200], cipher[200];
+    int j = 0;
+
+    for (int i = 0; text[i]; i++)
+        if (isalpha((unsigned char)text[i]))
+            plain[j++] = toupper((unsigned char)text[i]);
+
+    plain[j] = '\0';
+
+    if (j % 2 != 0)
+        plain[j++] = 'X';
+    plain[j] = '\0';
+
+    strcpy(cipher, plain);
+    hill(cipher, K);
+
+    printf("Ciphertext: %s\n", cipher);
+
+    hill(cipher, I);
+    printf("Decrypted text: %s\n", cipher);
+
+    return 0;
+}
