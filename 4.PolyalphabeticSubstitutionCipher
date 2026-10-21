@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+void encrypt(char *message, char *key) {
+    int j = 0;
+    int keyLen = strlen(key);
+
+    for (int i = 0; message[i] != '\0'; i++) {
+        if (isalpha(message[i])) {
+            char base = islower(message[i]) ? 'a' : 'A';
+            int k = toupper(key[j % keyLen]) - 'A';
+
+            message[i] = (message[i] - base + k) % 26 + base;
+            j++;
+        }
+    }
+}
+
+void decrypt(char *message, char *key) {
+    int j = 0;
+    int keyLen = strlen(key);
+
+    for (int i = 0; message[i] != '\0'; i++) {
+        if (isalpha(message[i])) {
+            char base = islower(message[i]) ? 'a' : 'A';
+            int k = toupper(key[j % keyLen]) - 'A';
+
+            message[i] = (message[i] - base - k + 26) % 26 + base;
+            j++;
+        }
+    }
+}
+
+int main() {
+    char message[1000], original[1000], key[100];
+
+    printf("Enter a message: ");
+    fgets(message, sizeof(message), stdin);
+
+    message[strcspn(message, "\n")] = '\0';
+    strcpy(original, message);
+
+    printf("Enter key: ");
+    scanf("%99s", key);
+
+    for (int i = 0; key[i] != '\0'; i++) {
+        if (!isalpha(key[i])) {
+            printf("Invalid key! Use alphabets only.\n");
+            return 1;
+        }
+    }
+
+    encrypt(message, key);
+    printf("Encrypted message: %s\n", message);
+
+    decrypt(message, key);
+    printf("Recovered plaintext: %s\n", message);
+
+    return 0;
+}
