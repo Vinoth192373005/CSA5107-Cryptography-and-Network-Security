@@ -1,0 +1,52 @@
+#include <stdio.h>
+
+int gcd(int a, int b) {
+    while (b != 0) {
+        int r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
+long long power(long long a, int b, int n) {
+    long long r = 1;
+    while (b > 0) {
+        if (b % 2)
+            r = r * a % n;
+        a = a * a % n;
+        b /= 2;
+    }
+    return r;
+}
+
+int main() {
+    int p, q, e, m, n, g;
+
+    printf("Enter p and q: ");
+    scanf("%d%d", &p, &q);
+
+    printf("Enter public exponent e: ");
+    scanf("%d", &e);
+
+    printf("Enter plaintext block: ");
+    scanf("%d", &m);
+
+    n = p * q;
+
+    printf("n = %d\n", n);
+    printf("Ciphertext = %lld\n", power(m, e, n));
+
+    g = gcd(m, n);
+
+    printf("GCD(M, n) = %d\n", g);
+
+    if (g > 1 && g < n) {
+        printf("A factor of n is found: %d\n", g);
+        printf("RSA modulus can be factored.\n");
+    } else {
+        printf("No nontrivial factor of n is found.\n");
+    }
+
+    return 0;
+}
