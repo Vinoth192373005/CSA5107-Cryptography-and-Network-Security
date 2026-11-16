@@ -1,0 +1,45 @@
+#include <stdio.h>
+
+long long power(long long a, long long b, long long q) {
+    long long r = 1;
+    a %= q;
+
+    while (b > 0) {
+        if (b % 2)
+            r = r * a % q;
+
+        a = a * a % q;
+        b /= 2;
+    }
+
+    return r;
+}
+
+int main() {
+    long long q, a, x, y, A, B, key1, key2;
+
+    printf("Enter prime q and public base a: ");
+    scanf("%lld%lld", &q, &a);
+
+    printf("Enter Alice's secret number: ");
+    scanf("%lld", &x);
+
+    printf("Enter Bob's secret number: ");
+    scanf("%lld", &y);
+
+    A = power(a, x, q);
+    B = power(a, y, q);
+
+    key1 = power(B, x, q);
+    key2 = power(A, y, q);
+
+    printf("Alice sends: %lld\n", A);
+    printf("Bob sends: %lld\n", B);
+    printf("Alice's shared key: %lld\n", key1);
+    printf("Bob's shared key: %lld\n", key2);
+
+    if (key1 == key2)
+        printf("Shared key established successfully.\n");
+
+    return 0;
+}
