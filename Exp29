@@ -1,0 +1,46 @@
+#include <stdio.h>
+
+int main() {
+    int state = 1600;
+    int block = 1024;
+    int capacity = state - block;
+    int lane = 64;
+    int capacityLanes = capacity / lane;
+    int blocks = 0, i;
+
+    int nonzero[25] = {0};
+
+    printf("State size: %d bits\n", state);
+    printf("Block size: %d bits\n", block);
+    printf("Capacity: %d bits\n", capacity);
+    printf("Capacity lanes: %d\n", capacityLanes);
+
+    for (i = 0; i < capacityLanes; i++)
+        nonzero[i] = 0;
+
+    while (1) {
+        blocks++;
+
+        for (i = 0; i < capacityLanes; i++) {
+            if (i < block / lane)
+                nonzero[i] = 1;
+        }
+
+        for (i = 0; i < capacityLanes; i++)
+            if (nonzero[i] == 0)
+                break;
+
+        if (i == capacityLanes)
+            break;
+
+        if (blocks > 100) {
+            printf("Some capacity lanes remain zero.\n");
+            return 0;
+        }
+    }
+
+    printf("Blocks required: %d\n", blocks);
+    printf("All capacity lanes have nonzero bits.\n");
+
+    return 0;
+}
