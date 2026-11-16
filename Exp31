@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdint.h>
+
+uint64_t generate(uint64_t x, uint64_t R, int size) {
+    uint64_t msb;
+
+    if (size == 64)
+        msb = x >> 63;
+    else
+        msb = x >> 127;
+
+    x <<= 1;
+
+    if (msb)
+        x ^= R;
+
+    return x;
+}
+
+int main() {
+    uint64_t L, K1, K2;
+    int size;
+
+    printf("Enter block size (64 or 128): ");
+    scanf("%d", &size);
+
+    printf("Enter L in hexadecimal (64-bit value): ");
+    scanf("%llx", (unsigned long long *)&L);
+
+    if (size == 64) {
+        K1 = generate(L, 0x1B, 64);
+        K2 = generate(K1, 0x1B, 64);
+    }
+    else if (size == 128) {
+        printf("This example requires a 128-bit implementation.\n");
+        return 0;
+    }
+    else {
+        printf("Invalid block size.\n");
+        return 0;
+    }
+
+    printf("K1 = %016llX\n", (unsigned long long)K1);
+    printf("K2 = %016llX\n", (unsigned long long)K2);
+
+    return 0;
+}
