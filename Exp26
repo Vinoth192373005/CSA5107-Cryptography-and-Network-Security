@@ -1,0 +1,55 @@
+#include <stdio.h>
+
+int gcd(int a, int b) {
+    while (b != 0) {
+        int t = b;
+        b = a % b;
+        a = t;
+    }
+    return a;
+}
+
+int power(int a, int b, int n) {
+    int r = 1;
+    while (b > 0) {
+        if (b % 2)
+            r = (long long)r * a % n;
+        a = (long long)a * a % n;
+        b /= 2;
+    }
+    return r;
+}
+
+int main() {
+    int p, q, e, d, n, phi, m, c, i;
+
+    printf("Enter two prime numbers: ");
+    scanf("%d%d", &p, &q);
+
+    n = p * q;
+    phi = (p - 1) * (q - 1);
+
+    printf("Enter public exponent e: ");
+    scanf("%d", &e);
+
+    if (gcd(e, phi) != 1) {
+        printf("Invalid public exponent.\n");
+        return 0;
+    }
+
+    for (d = 1; d < phi; d++)
+        if ((long long)e * d % phi == 1)
+            break;
+
+    printf("Public key: (%d, %d)\n", e, n);
+    printf("Private key: (%d, %d)\n", d, n);
+
+    printf("Enter message (less than n): ");
+    scanf("%d", &m);
+
+    c = power(m, e, n);
+    printf("Encrypted message: %d\n", c);
+    printf("Decrypted message: %d\n", power(c, d, n));
+
+    return 0;
+}
