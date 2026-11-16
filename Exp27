@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+long long power(long long a, long long b, long long n) {
+    long long r = 1;
+    while (b > 0) {
+        if (b % 2)
+            r = r * a % n;
+        a = a * a % n;
+        b /= 2;
+    }
+    return r;
+}
+
+int main() {
+    char msg[100];
+    long long e, n, c;
+    int i, m;
+
+    printf("Enter plaintext: ");
+    fgets(msg, sizeof(msg), stdin);
+
+    printf("Enter public exponent e: ");
+    scanf("%lld", &e);
+
+    printf("Enter modulus n: ");
+    scanf("%lld", &n);
+
+    printf("Encrypted values: ");
+    for (i = 0; msg[i] != '\0'; i++) {
+        if (isalpha((unsigned char)msg[i])) {
+            m = toupper((unsigned char)msg[i]) - 'A';
+            c = power(m, e, n);
+            printf("%lld ", c);
+        }
+    }
+
+    printf("\n");
+    return 0;
+}
