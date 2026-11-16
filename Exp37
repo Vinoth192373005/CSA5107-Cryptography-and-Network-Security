@@ -1,0 +1,113 @@
+
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 1000
+
+char english[] = "ETAOINSHRDLCUMWFGYPBVKJXQZ";
+
+double freq[26] = {
+    8.167, 1.492, 2.782, 4.253, 12.702, 2.228,
+    2.015, 6.094, 6.966, 0.153, 0.772, 4.025,
+    2.406, 6.749, 7.507, 1.929, 0.095, 5.987,
+    6.327, 9.056, 2.758, 0.978, 2.360, 0.150,
+    1.974, 0.074
+};
+
+int main() {
+    char cipher[MAX], plain[26][MAX];
+    int count[26] = {0}, order[26];
+    int n, i, j, k, temp, total = 0;
+    double score[26], s;
+
+    printf("Enter ciphertext: ");
+    fgets(cipher, MAX, stdin);
+
+    printf("Enter number of possible plaintexts: ");
+    scanf("%d", &n);
+
+    if (n < 1) {
+        printf("Invalid number.\n");
+        return 0;
+    }
+    if (n > 26)
+        n = 26;
+
+    for (i = 0; cipher[i] != '\0'; i++) {
+        if (isalpha((unsigned char)cipher[i])) {
+            count[toupper((unsigned char)cipher[i]) - 'A']++;
+            total++;
+        }
+    }
+
+    for (i = 0; i < 26; i++)
+        order[i] = i;
+
+    for (i = 0; i < 25; i++) {
+        for (j = i + 1; j < 26; j++) {
+            if (count[order[j]] > count[order[i]]) {
+                temp = order[i];
+                order[i] = order[j];
+                order[j] = temp;
+            }
+        }
+    }
+
+    for (k = 0; k < 26; k++) {
+        char map[26];
+        int decryptedCount[26] = {0};
+
+        for (i = 0; i < 26; i++)
+            map[order[i]] = english[(i + k) % 26];
+
+        strcpy(plain[k], cipher);
+
+        for (i = 0; cipher[i] != '\0'; i++) {
+            if (isalpha((unsigned char)cipher[i])) {
+                int c = toupper((unsigned char)cipher[i]) - 'A';
+                char p = map[c];
+
+                plain[k][i] = islower((unsigned char)cipher[i])
+                              ? tolower(p) : p;
+
+                decryptedCount[p - 'A']++;
+            }
+        }
+
+        s = 0;
+        if (total > 0) {
+            for (i = 0; i < 26; i++) {
+                double expected = total * freq[i] / 100.0;
+                double diff = decryptedCount[i] - expected;
+
+                if (expected > 0)
+                    s += diff * diff / expected;
+            }
+        }
+
+        score[k] = s;
+    }
+
+    for (i = 0; i < 25; i++) {
+        for (j = i + 1; j < 26; j++) {
+            if (score[j] < score[i]) {
+                double ts = score[i];
+                score[i] = score[j];
+                score[j] = ts;
+
+                char tp[MAX];
+                strcpy(tp, plain[i]);
+                strcpy(plain[i], plain[j]);
+                strcpy(plain[j], tp);
+            }
+        }
+    }
+
+    printf("\nPossible plaintexts:\n");
+
+    for (i = 0; i < n; i++)
+        printf("%d. %s\n", i + 1, plain[i]);
+
+    return 0;
+}
