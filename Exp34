@@ -1,0 +1,45 @@
+#include <stdio.h>
+
+int main() {
+    int p[100], ecb[100], cbc[100], cfb[100];
+    int n, key, iv, i;
+
+    printf("Enter number of plaintext blocks: ");
+    scanf("%d", &n);
+
+    printf("Enter plaintext blocks (0-15): ");
+    for (i = 0; i < n; i++)
+        scanf("%d", &p[i]);
+
+    printf("Enter key (0-15): ");
+    scanf("%d", &key);
+
+    printf("Enter IV (0-15): ");
+    scanf("%d", &iv);
+
+    /* Add padding block */
+    p[n++] = 8;
+
+    printf("\nECB Mode:\n");
+    for (i = 0; i < n; i++) {
+        ecb[i] = p[i] ^ key;
+        printf("%d ", ecb[i]);
+    }
+
+    printf("\nCBC Mode:\n");
+    for (i = 0; i < n; i++) {
+        cbc[i] = (p[i] ^ iv) ^ key;
+        iv = cbc[i];
+        printf("%d ", cbc[i]);
+    }
+
+    printf("\nCFB Mode:\n");
+    iv = 0;
+    for (i = 0; i < n; i++) {
+        cfb[i] = p[i] ^ (key ^ iv);
+        iv = cfb[i];
+        printf("%d ", cfb[i]);
+    }
+
+    return 0;
+}
