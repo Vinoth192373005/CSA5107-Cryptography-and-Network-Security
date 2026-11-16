@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int power(int a, int b, int n) {
+    int r = 1;
+    while (b > 0) {
+        if (b % 2)
+            r = (long long)r * a % n;
+        a = (long long)a * a % n;
+        b /= 2;
+    }
+    return r;
+}
+
+int main() {
+    int p = 23, q = 11, g = 2;
+    int x = 3, h = 7;
+    int k1 = 4, k2 = 5;
+    int r1, s1, r2, s2;
+    int kinv, kinv2;
+    int i;
+
+    printf("DSA Signatures:\n");
+
+    r1 = power(g, k1, p) % q;
+    kinv = 3;
+    s1 = (kinv * (h + x * r1)) % q;
+
+    r2 = power(g, k2, p) % q;
+    kinv2 = 9;
+    s2 = (kinv2 * (h + x * r2)) % q;
+
+    printf("First signature: (%d, %d)\n", r1, s1);
+    printf("Second signature: (%d, %d)\n", r2, s2);
+
+    printf("\nRSA Signatures:\n");
+
+    {
+        int n = 143, e = 7, d = 103;
+        int m = 9;
+        int rsa1 = power(m, d, n);
+        int rsa2 = power(m, d, n);
+
+        printf("First signature: %d\n", rsa1);
+        printf("Second signature: %d\n", rsa2);
+    }
+
+    return 0;
+}
