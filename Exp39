@@ -1,0 +1,89 @@
+
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 1000
+
+double freq[26] = {
+    8.167, 1.492, 2.782, 4.253, 12.702, 2.228,
+    2.015, 6.094, 6.966, 0.153, 0.772, 4.025,
+    2.406, 6.749, 7.507, 1.929, 0.095, 5.987,
+    6.327, 9.056, 2.758, 0.978, 2.360, 0.150,
+    1.974, 0.074
+};
+
+int main() {
+    char cipher[MAX], plain[26][MAX], temp[MAX];
+    double score[26], expected, diff;
+    int n, count[26], total, i, j, k, c, p;
+
+    printf("Enter ciphertext: ");
+    fgets(cipher, MAX, stdin);
+
+    printf("Enter number of possible plaintexts: ");
+    scanf("%d", &n);
+
+    if (n < 1) {
+        printf("Invalid number.\n");
+        return 0;
+    }
+
+    if (n > 26)
+        n = 26;
+
+    for (k = 0; k < 26; k++) {
+        memset(count, 0, sizeof(count));
+        total = 0;
+
+        for (i = 0; cipher[i] != '\0'; i++) {
+            if (isalpha((unsigned char)cipher[i])) {
+                c = toupper((unsigned char)cipher[i]) - 'A';
+                p = (c - k + 26) % 26;
+
+                plain[k][i] = islower((unsigned char)cipher[i])
+                              ? p + 'a' : p + 'A';
+
+                count[p]++;
+                total++;
+            } else {
+                plain[k][i] = cipher[i];
+            }
+        }
+
+        plain[k][i] = '\0';
+
+        score[k] = 0;
+
+        if (total > 0) {
+            for (j = 0; j < 26; j++) {
+                expected = total * freq[j] / 100.0;
+                diff = count[j] - expected;
+
+                if (expected > 0)
+                    score[k] += diff * diff / expected;
+            }
+        }
+    }
+
+    for (i = 0; i < 25; i++) {
+        for (j = i + 1; j < 26; j++) {
+            if (score[j] < score[i]) {
+                double t = score[i];
+                score[i] = score[j];
+                score[j] = t;
+
+                strcpy(temp, plain[i]);
+                strcpy(plain[i], plain[j]);
+                strcpy(plain[j], temp);
+            }
+        }
+    }
+
+    printf("\nPossible plaintexts:\n");
+
+    for (i = 0; i < n; i++)
+        printf("%d. %s\n", i + 1, plain[i]);
+
+    return 0;
+}
