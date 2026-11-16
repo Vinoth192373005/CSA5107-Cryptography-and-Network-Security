@@ -1,0 +1,57 @@
+#include <stdio.h>
+
+int main() {
+    int n = 3599, e = 31, p, q, phi;
+    int a, b, r, x1 = 0, x2 = 1, d;
+
+    for (p = 2; p * p <= n; p++) {
+        if (n % p == 0) {
+            q = n / p;
+            break;
+        }
+    }
+
+    phi = (p - 1) * (q - 1);
+
+    a = phi;
+    b = e;
+
+    while (b != 0) {
+        r = a % b;
+        a = b;
+        b = r;
+    }
+
+    if (a != 1) {
+        printf("Private key does not exist.\n");
+        return 0;
+    }
+
+    a = phi;
+    b = e;
+    x1 = 1;
+    x2 = 0;
+
+    while (b != 0) {
+        int quotient = a / b;
+        r = a % b;
+        a = b;
+        b = r;
+
+        int temp = x1 - quotient * x2;
+        x1 = x2;
+        x2 = temp;
+    }
+
+    d = x1;
+    if (d < 0)
+        d += phi;
+
+    printf("p = %d\n", p);
+    printf("q = %d\n", q);
+    printf("Phi(n) = %d\n", phi);
+    printf("Public key: (%d, %d)\n", e, n);
+    printf("Private key: (%d, %d)\n", d, n);
+
+    return 0;
+}
