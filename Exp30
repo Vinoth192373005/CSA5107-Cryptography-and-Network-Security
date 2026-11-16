@@ -1,0 +1,33 @@
+#include <stdio.h>
+
+int main() {
+    int K, X, T, Y, C1, C2;
+
+    printf("Enter key (0-255): ");
+    scanf("%d", &K);
+
+    printf("Enter message block X (0-255): ");
+    scanf("%d", &X);
+
+    /* Simplified encryption using XOR */
+    T = X ^ K;
+
+    printf("One-block CBC-MAC: %d\n", T);
+
+    Y = X ^ T;
+
+    printf("Second block Y = X XOR T: %d\n", Y);
+
+    C1 = X ^ K;
+    C2 = Y ^ C1;
+    C2 = C2 ^ K;
+
+    printf("Two-block CBC-MAC: %d\n", C2);
+
+    if (T == C2)
+        printf("MAC values are equal.\n");
+    else
+        printf("MAC values are different.\n");
+
+    return 0;
+}
